@@ -19,7 +19,6 @@ public class RequestsController {
 	@PostMapping
 	public ResponseEntity<Boolean> receiveOrder(@RequestBody Request request) {
 		dispatcher.dispatch(request);
-		System.out.println(request.toString());
 		return ResponseEntity.ok(true);
 	}
 
