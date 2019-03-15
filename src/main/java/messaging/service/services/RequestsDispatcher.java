@@ -8,20 +8,22 @@ import org.xmpp.packet.IQ;
 
 import com.google.gson.Gson;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import messaging.service.model.Request;
 import messaging.service.workers.ReceiveRequest;
 import messaging.service.workers.GetRequest;
 
 @Service
 public class RequestsDispatcher extends XMPPComponent {
-	
-	private static final String password = null;
-	private static final String jid = null;
-	private static final String xmppServerIp = null;
-	private static final int xmppServerPort = 0;
+	private static Dotenv dotenv = Dotenv.load();
 
 	public RequestsDispatcher() throws ComponentException {
-		super(jid, password, xmppServerIp, xmppServerPort);
+		super(
+			dotenv.get("JID"), 
+			dotenv.get("PASSWORD"), 
+			dotenv.get("XMPP_SERVER_IP"), 
+			Integer.parseInt(dotenv.get("XMPP_SERVER_PORT"))
+		);
 		addSetHandler(new ReceiveRequest());
 		addGetHandler(new GetRequest());
 		this.connect();
