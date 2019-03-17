@@ -22,7 +22,8 @@ public class RequestsDispatcher extends XMPPComponent {
 			dotenv.get("JID"), 
 			dotenv.get("PASSWORD"), 
 			dotenv.get("XMPP_SERVER_IP"), 
-			Integer.parseInt(dotenv.get("XMPP_SERVER_PORT"))
+			Integer.parseInt(dotenv.get("XMPP_SERVER_PORT")),
+			Integer.parseInt(dotenv.get("TIMEOUT"))
 		);
 		addSetHandler(new ReceiveRequest());
 		addGetHandler(new GetRequest());
