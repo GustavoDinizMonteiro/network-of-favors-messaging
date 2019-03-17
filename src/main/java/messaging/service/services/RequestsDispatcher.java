@@ -1,5 +1,8 @@
 package messaging.service.services;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.dom4j.Element;
 import org.jamppa.component.XMPPComponent;
 import org.springframework.stereotype.Service;
@@ -10,8 +13,8 @@ import com.google.gson.Gson;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import messaging.service.model.Request;
-import messaging.service.workers.ReceiveRequest;
 import messaging.service.workers.GetRequest;
+import messaging.service.workers.ReceiveRequest;
 
 @Service
 public class RequestsDispatcher extends XMPPComponent {
@@ -27,7 +30,7 @@ public class RequestsDispatcher extends XMPPComponent {
 		);
 		addSetHandler(new ReceiveRequest());
 		addGetHandler(new GetRequest());
-		this.connect();
+		connect();
 	}
 	
 	public void dispatch(Request request) {
@@ -42,7 +45,27 @@ public class RequestsDispatcher extends XMPPComponent {
         String orderJson = new Gson().toJson(request);
         orderElement.setText(orderJson);
         
-        this.syncSendPacket(iq);
+        syncSendPacket(iq);
+	}
+
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> get(Integer id, String requester,  String token, String provider) {
+		IQ iq = new IQ(IQ.Type.get);
+		iq.setTo(provider);
+		
+        Element userElement = iq.getElement().addElement(requester);
+        userElement.setText(token);
+
+        Element queryElement = iq.getElement().addElement("query", "get");
+
+        Element orderIdElement = queryElement.addElement("id");
+        orderIdElement.setText(id.toString());
+        
+        IQ response = (IQ) syncSendPacket(iq);
+        String order = response.getElement().element("order").getText();
+        
+		return (Map<String, Object>) new Gson().fromJson(order, HashMap.class);
+        
 	}
 
 }
