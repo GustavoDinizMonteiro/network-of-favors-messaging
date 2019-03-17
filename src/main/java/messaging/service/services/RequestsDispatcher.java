@@ -38,7 +38,7 @@ public class RequestsDispatcher extends XMPPComponent {
         iq.setTo(request.getRecipient());
         iq.setID(request.getOrder().get("id").toString());
         
-        Element queryElement = iq.getElement().addElement("query", "create");
+        Element queryElement = iq.getElement().addElement("query", "REMOTE_CREATE_ORDER");
 
         Element orderElement = queryElement.addElement("request");
 
@@ -56,7 +56,7 @@ public class RequestsDispatcher extends XMPPComponent {
         Element userElement = iq.getElement().addElement(requester);
         userElement.setText(token);
 
-        Element queryElement = iq.getElement().addElement("query", "get");
+        Element queryElement = iq.getElement().addElement("query", "REMOTE_GET_ORDER");
 
         Element orderIdElement = queryElement.addElement("id");
         orderIdElement.setText(id.toString());
@@ -64,8 +64,7 @@ public class RequestsDispatcher extends XMPPComponent {
         IQ response = (IQ) syncSendPacket(iq);
         String order = response.getElement().element("order").getText();
         
-		return (Map<String, Object>) new Gson().fromJson(order, HashMap.class);
-        
+		return (Map<String, Object>) new Gson().fromJson(order, HashMap.class); 
 	}
 
 }
