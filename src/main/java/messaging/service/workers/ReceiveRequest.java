@@ -4,12 +4,13 @@ import org.dom4j.Element;
 import org.jamppa.component.handler.AbstractQueryHandler;
 import org.xmpp.packet.IQ;
 
-import com.google.gson.Gson;
+import com.mashape.unirest.http.Unirest;
 
-import messaging.service.model.Request;
+import io.github.cdimascio.dotenv.Dotenv;
 
 public class ReceiveRequest extends AbstractQueryHandler {
-
+	private static Dotenv dotenv = Dotenv.load();
+	
 	public ReceiveRequest() {
 		super("REMOTE_CREATE_ORDER");
 	}
@@ -19,16 +20,14 @@ public class ReceiveRequest extends AbstractQueryHandler {
         Element orderElement = queryElement.element("request");
         String orderJsonStr = orderElement.getText();
         
-        IQ response = IQ.createResultIQ(iq);
-        Gson gson = new Gson();
+        IQ responseIQ = IQ.createResultIQ(iq);
         try {
-        	@SuppressWarnings("unused")
-			Request request = (Request) gson.fromJson(orderJsonStr, Class.forName(Request.class.getName()));
-        	// TODO: re-send request to network of favors.
+        	String endpoint = dotenv.get("XMPP_SERVER_IP");
+        	Unirest.post(endpoint).body(orderJsonStr).asJson();
         } catch (Throwable e) {
             throw new RuntimeException();
         }
-        return response;
+        return responseIQ;
 	}
 
 }
