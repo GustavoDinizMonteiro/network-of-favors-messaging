@@ -52,9 +52,6 @@ public class RequestsDispatcher extends XMPPComponent {
 	public Map<String, Object> get(Integer id, String requester,  String token, String provider) {
 		IQ iq = new IQ(IQ.Type.get);
 		iq.setTo(provider);
-		
-        Element userElement = iq.getElement().addElement(requester);
-        userElement.setText(token);
 
         Element queryElement = iq.getElement().addElement("query", "REMOTE_GET_ORDER");
 
